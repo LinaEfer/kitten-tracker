@@ -13,7 +13,7 @@ import argparse
 from datetime import datetime, timedelta
 
 from config_loader import load_config
-from scraper import fetch_target
+from scraper import fetch_target, facebook_browser, fetch_facebook_on_page
 from detector import detect_changes
 from notifier import notify
 
@@ -28,11 +28,12 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 
-def run_check(target: dict, config: dict):
+def run_check(target: dict, config: dict, result: dict | None = None):
     name = target["name"]
     log.info(f"=== Checking: {name} ===")
 
-    result = fetch_target(target, config)
+    if result is None:
+        result = fetch_target(target, config)
 
     if not result.get("success"):
         log.error(f"Fetch failed for {name}: {result.get('error')}")
@@ -58,11 +59,28 @@ def run_check(target: dict, config: dict):
 
 
 def run_once(config: dict):
-    for target in config["targets"]:
+    facebook_targets = [t for t in config["targets"] if t.get("type") == "facebook"]
+    other_targets = [t for t in config["targets"] if t.get("type") != "facebook"]
+
+    for target in other_targets:
         try:
             run_check(target, config)
         except Exception as e:
             log.error(f"Unexpected error checking {target['name']}: {e}", exc_info=True)
+
+    if not facebook_targets:
+        return
+
+    fb_email = config.get("facebook_email")
+    fb_password = config.get("facebook_password")
+
+    with facebook_browser(fb_email, fb_password) as page:
+        for target in facebook_targets:
+            try:
+                result = fetch_facebook_on_page(page, target["url"], fb_email, fb_password)
+                run_check(target, config, result=result)
+            except Exception as e:
+                log.error(f"Unexpected error checking {target['name']}: {e}", exc_info=True)
 
 
 def run_loop(config: dict):
