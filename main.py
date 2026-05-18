@@ -7,13 +7,12 @@ Usage:
     python main.py --test-notify  # Send a test notification
 """
 
-import json
 import time
 import logging
 import argparse
 from datetime import datetime, timedelta
-from pathlib import Path
 
+from config_loader import load_config
 from scraper import fetch_target
 from detector import detect_changes
 from notifier import notify
@@ -27,13 +26,6 @@ logging.basicConfig(
     ]
 )
 log = logging.getLogger(__name__)
-
-CONFIG_PATH = "config.json"
-
-
-def load_config() -> dict:
-    with open(CONFIG_PATH, encoding="utf-8") as f:
-        return json.load(f)
 
 
 def run_check(target: dict, config: dict):

@@ -150,8 +150,13 @@ def _fill_facebook_login_fields(page, fb_email: str, fb_password: str) -> None:
 def _submit_facebook_login(page) -> None:
     """Submit the login form."""
     submit_selectors = [
+        '[data-testid="royal_login_button"]',
         'button[name="login"]',
+        'input[name="login"]',
+        'input[type="submit"]',
         'button[type="submit"]',
+        'div[role="button"]:has-text("Se connecter")',
+        'div[role="button"]:has-text("Log in")',
         'button:has-text("Se connecter")',
         'button:has-text("Log in")',
         'button:has-text("Log In")',

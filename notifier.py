@@ -158,7 +158,8 @@ def send_ntfy(report: dict, ntfy_config: dict) -> bool:
             url,
             data=data,
             headers={
-                "Title": "🐱 Kitten Alert!",
+                # HTTP headers must be latin-1; keep emoji out of header values
+                "Title": "Kitten Alert!",
                 "Priority": "urgent",
                 "Tags": "cat,sparkles",
                 "Click": report["url"],

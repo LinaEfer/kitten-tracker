@@ -31,22 +31,22 @@
       "enabled": true,
       "smtp_host": "smtp.gmail.com",
       "smtp_port": 587,
-      "sender_email": "EMAIL_SENDER",
-      "sender_password": "EMAIL_PASSWORD",
-      "recipient_email": "EMAIL_RECIPIENT"
+      "sender_email": "",
+      "sender_password": "",
+      "recipient_email": ""
     },
     "pushover": {
       "enabled": false,
-      "user_key": "PUSHOVER_USER_KEY",
-      "api_token": "PUSHOVER_API_TOKEN"
+      "user_key": "",
+      "api_token": ""
     },
     "ntfy": {
       "enabled": false,
-      "topic": "NTFY_TOPIC",
+      "topic": "",
       "server": "https://ntfy.sh"
     }
   },
   "snapshots_dir": "snapshots",
-  "facebook_email": "FACEBOOK_EMAIL",
-  "facebook_password": "FACEBOOK_EMAIL"
+  "facebook_email": "",
+  "facebook_password": ""
 }
