@@ -1,0 +1,79 @@
+name: Kitten Tracker
+
+on:
+  schedule:
+    # Runs every 30 minutes
+    - cron: "*/30 * * * *"
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: Restore snapshots from cache
+        uses: actions/cache@v4
+        with:
+          path: snapshots/
+          key: kitten-snapshots-${{ github.run_id }}
+          restore-keys: |
+            kitten-snapshots-
+
+      - name: Write config from secrets
+        run: |
+          python -c "
+          import json, os
+          config = json.loads(open('config.json').read())
+          config['notifications']['email']['sender_email'] = os.environ['EMAIL_SENDER']
+          config['notifications']['email']['sender_password'] = os.environ['EMAIL_PASSWORD']
+          config['notifications']['email']['recipient_email'] = os.environ['EMAIL_RECIPIENT']
+          config['notifications']['email']['enabled'] = True
+          ntfy_topic = os.environ.get('NTFY_TOPIC', '')
+          if ntfy_topic:
+              config['notifications']['ntfy']['topic'] = ntfy_topic
+              config['notifications']['ntfy']['enabled'] = True
+          fb_email = os.environ.get('FACEBOOK_EMAIL', '')
+          fb_password = os.environ.get('FACEBOOK_PASSWORD', '')
+          if fb_email:
+              config['facebook_email'] = fb_email
+              config['facebook_password'] = fb_password
+          open('config.json', 'w').write(json.dumps(config, indent=2))
+          "
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          FACEBOOK_EMAIL: ${{ secrets.FACEBOOK_EMAIL }}
+          FACEBOOK_PASSWORD: ${{ secrets.FACEBOOK_PASSWORD }}
+
+      - name: Run tracker
+        run: python main.py
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tracker-logs-${{ github.run_id }}
+          path: tracker.log
+          retention-days: 7
