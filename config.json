@@ -11,14 +11,20 @@
       "url": "https://www.facebook.com/profile.php?id=100076996901859&locale=fr_FR",
       "type": "facebook",
       "check_interval_minutes": 240
+    },
+    {
+      "name": "Chatterie O'Frana Cas - Facebook",
+      "url": "https://www.facebook.com/chatterieofranacas?locale=fr_FR",
+      "type": "facebook",
+      "check_interval_minutes": 240
     }
   ],
   "keywords": {
     "breed_siberian": ["neva masquerade", "neva maskerade", "sibérien", "siberien", "siberian"],
     "breed_maine_coon": ["maine coon", "mainecoon"],
     "color": ["black smoke", "fumée noire", "fumee noire", "black smok"],
-    "sex": ["mâle", "male", "garçon"],
-    "availability": ["disponible", "available", "à vendre", "a vendre", "à réserver", "a reserver", "vente", "chaton", "kitten", "portée", "portee", "naissance", "né", "ne ", "born"]
+    "sex": ["mâle", "male", "mâles", "males", "garçon", "garçons"],
+    "availability": ["disponible", "available", "à vendre", "a vendre", "à réserver", "a reserver", "vente", "chaton", "kitten", "portée", "portee", "naissance", "né", "ne ", "born", "reste", "✅"]
   },
   "notifications": {
     "email": {
